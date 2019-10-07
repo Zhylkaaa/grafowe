@@ -3,27 +3,22 @@ import sys
 
 sys.setrecursionlimit(100000)
 
-p = dict()
-
-def union(x, y):
-	global p
-	a = find(x)
-	b = find(y)
+def union(x, y, p):
+	a = find(x, p)
+	b = find(y, p)
 
 	if(a!=b):
 		p[a] = b
 
-def find(x):
-	global p
+def find(x, p):
 	if(p[x] != x):
 		v = p[x]
-		p[x]=find(v)
+		p[x]=find(v, p)
 		return p[x]
 	else:
 		return x
 
 def run(file):
-	global p
 	(V, L) = loadWeightedGraph(file)
 
 
@@ -38,9 +33,9 @@ def run(file):
 	m = -1
 	for (c, x, y) in L_s:
 
-		union(x, y)
+		union(x, y, p)
 		
-		if(find(s) == find(t)):
+		if(find(s, p) == find(t, p)):
 			m=c
 			break
 
