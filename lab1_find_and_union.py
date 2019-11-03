@@ -41,18 +41,24 @@ def run(file):
 
 	return m
 
+import time 
 import os
 files = os.listdir("graphs/")
 print(files)
 c=0
+
 for i in files:
 	res = -1
 	with open('graphs/' + i) as f:
 		res = int(f.readline().split()[3])
+	s = time.time()
 	res_t = run('graphs/' + i)
+	e = time.time()
 	if(res == res_t):
 		c+=1
-		print(i + ": OK")
+		print(i + ": OK", end=' ')
 	else:
-		print(i + ": answer is: " + str(res) + " found: " + str(res_t))
+		print(i + ": answer is: " + str(res) + " found: " + str(res_t), end=' ')
+	print('(%f)' % (e-s))
+	
 print(str(c) + "/" + str(len(files)))
