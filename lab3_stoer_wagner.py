@@ -16,15 +16,11 @@ def mergeVertices( G, x, y ):
 	neibhors = list(G[y].edges.items())
 
 	for v, w in neibhors:
-		if(v == x):
-			G[x].delEdge(y)
-			G[y].delEdge(x)
-			continue
-
-		G[x].addEdge(v, w)
-		G[v].addEdge(x, w)
 		G[y].delEdge(v)
 		G[v].delEdge(y)
+		if(v != x):
+			G[x].addEdge(v, w)
+			G[v].addEdge(x, w)
 
 	#print('deactivated vertex %d' % y)
 
@@ -52,7 +48,7 @@ def minimumCutPhase(G, V):
 			for (u, w) in G[v].edges.items():
 				#print(u)
 				if(not Vis[u]):
-					W[u] = W[v] + w
+					W[u] += w
 					Q.put((-W[u], u))
 
 	#print(S)
@@ -62,7 +58,8 @@ def minimumCutPhase(G, V):
 	res = 0
 	for (v,w) in G[s].edges.items():
 		res += w
-	mergeVertices(G,t,s)
+
+	mergeVertices(G, t, s)
 	return res
 
 
@@ -91,19 +88,19 @@ def run(file_name):
 
 import time 
 import os
-files = os.listdir("graphs-lab2/connectivity/")
+files = os.listdir("graphs-lab3/")
 print(files)
 c=0
 
 for i in files:
 	if(i == 'grid100x100'):
 		continue
-	
+
 	res = -1
-	with open('graphs-lab2/connectivity/' + i) as f:
+	with open('graphs-lab3/' + i) as f:
 		res = int(f.readline().split()[3])
 	s = time.time()
-	res_t = run('graphs-lab2/connectivity/' + i)
+	res_t = run('graphs-lab3/' + i)
 	e = time.time()
 	if(res == res_t):
 		c+=1
