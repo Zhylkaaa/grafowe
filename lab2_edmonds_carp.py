@@ -42,22 +42,17 @@ def bfs(GR, s, t, c, f, A, V):
 						parent[u] = v
 	return (None, None)
 
-
-def run(file_name):
-	V, L = loadDirectedWeightedGraph(file_name)
+def edmonds_carp(L, V, s, t):
 	G = [set() for i in range(V+1)]
 	c = dict()
 	f = dict()
-	A = dict()
+	A = set()
 
 	for (x,y,w) in L:
 		G[x].add(y)
-		A[(x,y)] = 1
+		A.add((x,y))
 		c[(x,y)] = w
 		f[(x,y)] = 0
-
-	s = 1
-	t = V
 
 	GR = G.copy()
 
@@ -76,30 +71,34 @@ def run(file_name):
 
 	res = 0
 
-	for u in G[1]:
-		res += f[(1, u)]
+	for u in G[s]:
+		res += f[(s, u)]
 	return res
 
+def run(file_name):
+	V, L = loadDirectedWeightedGraph(file_name)
+	return edmonds_carp(L, V, 1, V)
 
 
-import time 
-import os
-files = os.listdir("graphs-lab2/flow/")
-print(files)
-c=0
-
-for i in files:
-	res = -1
-	with open('graphs-lab2/flow/' + i) as f:
-		res = int(f.readline().split()[3])
-	s = time.time()
-	res_t = run('graphs-lab2/flow/' + i)
-	e = time.time()
-	if(res == res_t):
-		c+=1
-		print(i + ": OK", end=' ')
-	else:
-		print(i + ": answer is: " + str(res) + " found: " + str(res_t), end=' ')
-	print('(%f)' % (e-s))
+if(__name__ == '__main__'):
+	import time 
+	import os
+	files = os.listdir("graphs-lab2/flow/")
+	print(files)
+	c=0
 	
-print(str(c) + "/" + str(len(files)))
+	for i in files:
+		res = -1
+		with open('graphs-lab2/flow/' + i) as f:
+			res = int(f.readline().split()[3])
+		s = time.time()
+		res_t = run('graphs-lab2/flow/' + i)
+		e = time.time()
+		if(res == res_t):
+			c+=1
+			print(i + ": OK", end=' ')
+		else:
+			print(i + ": answer is: " + str(res) + " found: " + str(res_t), end=' ')
+		print('(%f)' % (e-s))
+		
+	print(str(c) + "/" + str(len(files)))
