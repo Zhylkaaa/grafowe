@@ -13,65 +13,112 @@ class Set:
 	def __hash__(self):
 		return hash(self.idx)
 
+	def __str__(self):
+		return str(self.idx)
+
+def print_sets_prev_next(sets):
+	start = sets
+
+	while(start.prev is not None):
+		start = start.prev
+
+	"""print('---------------------------------')
+	while(start is not None):
+		if(start.prev is not None):
+			print(start.prev.vertices, end=' ')
+		else:
+			print(None, end = ' ')
+		print(start.vertices, end = ' ')
+		if(start.next is not None):
+			print(start.next.vertices, end=' ')
+		else:
+			print(None, end = ' ')
+		print()
+		start = start.next
+	print('---------------------------------')"""
+	while(start is not None):
+		print(start, ':', start.vertices, end = ' ')
+		start = start.next
+	print()
+
+def print_sets_next_prev(sets):
+	start = sets
+
+	while(start.next is not None):
+		start = start.next
+
+	while(start is not None):
+		print(start, ':', start.vertices, end = ' ')
+		start = start.prev
+	print()
+
+
 def lexBSF(G, V, s=1):
 	Vis = [False for _ in range(V+1)]
 
+	v_to_set = dict()
+
+	start_set = Set()
+	start_set.vertices.add(s)
+	v_to_set[s] = start_set
+
+	vertices_set = Set()
+
+	for i in range(1, V+1):
+		if s == i:continue
+		vertices_set.vertices.add(i)
+		v_to_set[i] = vertices_set
+
+	start_set.prev = vertices_set
+	vertices_set.next = start_set
+
+	current_set = start_set
+
 	order = []
 
-	Sets = Set()
+	while current_set is not None:
 
-	for v in range(1, V+1):
-		Sets.vertices.add(v)	
+		u = current_set.vertices.pop()
+		Vis[u] = True
 
-	v_to_set = {v: Sets for v in range(1, V+1)}
+		order.append(u)
 
-	while Sets is not None:
-		if Vis[s] == False:
-			v = s 
-			Sets.vertices.remove(s)
-		else:
-			v = Sets.vertices.pop()
+		while not current_set.vertices:
+			if(u == 7):
+				print(current_set.vertices)
 
-		order.append(v)
-
-		if not Sets.vertices:
-			Sets = Sets.prev
-			if Sets is not None:
-				Sets.next = None
-
-		if Sets is None:
-			break
-
-		Vis[v] = True
+			current_set = current_set.prev
+			if current_set is not None:
+				current_set.next = None
+			else:
+				return order
 
 		set_to_set = dict()
 
-		for u in G[v]:
-			if not Vis[u]:
-				if v_to_set[u] not in set_to_set:
-					set_to_set[ v_to_set[u] ] = Set()
-					set_to_set[ v_to_set[u] ].next = v_to_set[u].next
-					v_to_set[u].next = set_to_set[ v_to_set[u] ]
-					set_to_set[ v_to_set[u] ].prev = v_to_set[u]
+		for v in G[u]:
+			if not Vis[v]:
+				if v_to_set[v] not in set_to_set:
+					curr = v_to_set[v]
+					next = Set()
 
-				set_to_set[ v_to_set[u] ].vertices.add(u)
-				v_to_set[u].vertices.remove(u)
+					next.next = curr.next
+					curr.next = next
+					next.prev = curr
 
-				if not v_to_set[u].vertices:
-					if v_to_set[u].prev is not None and v_to_set[u].next is not None:
-						v_to_set[u].prev.next = v_to_set[u].next
-						v_to_set[u].next.prev = v_to_set[u].prev
-					elif v_to_set[u].prev is None:
-						v_to_set[u].next.prev = None
-					elif v_to_set[u].next is None:
-						v_to_set[u].prev.next = None
+					if next.next is not None:
+						next.next.prev = next
 
-				v_to_set[u] = set_to_set[ v_to_set[u] ]
+					set_to_set[curr] = next
 
-		while Sets.next is not None:
-			Sets = Sets.next
+				v_to_set[v].vertices.remove(v)
+				v_to_set[v] = set_to_set[v_to_set[v]]
+				v_to_set[v].vertices.add(v)
+
+		while current_set.next is not None:
+			current_set = current_set.next
 
 	return order
+
 
 if __name__ == '__main__':
 	G = [[] for _ in range(9)]
@@ -82,6 +129,6 @@ if __name__ == '__main__':
 	G[5] = [8, 7]
 	G[6] = [7, 3, 1, 8]
 	G[7] = [4, 5, 6, 8]
-	G[8] = [2, 3, 5, 7, 6]
+	G[8] = [2, 3, 4, 5, 7, 6]
 
 	print(lexBSF(G, 8))
