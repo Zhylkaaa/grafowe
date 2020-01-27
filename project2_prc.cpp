@@ -116,7 +116,7 @@ int main(){
 		for(int i = 0;i<last;i++){
 			//turbo(n, G, s[ll * ((i+1) % 2) + rr * (i % 2)], costs, M, Vis);
 
-			if(is_isolated(s[i], n, G, costs))continue;
+			if(is_isolated(s[i], n, G, costs))continue; // stolen from Agnieszka :* 
 
 			turbo(n, G, s[i], costs, M, Vis);
 			c = 0;
